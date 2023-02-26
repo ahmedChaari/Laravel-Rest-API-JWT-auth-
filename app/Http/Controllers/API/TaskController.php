@@ -19,19 +19,25 @@ class TaskController extends Controller
         $filter    =  $request->get('filter') != '' ? $request->get('filter') : 'created_at' ;
         $filterType = $request->get('filter_type') == 'DESC' ? 'DESC' : 'ASC';
 
-        
-        $tasks = TaskResource::collection(Task::latest()
-                ->orderBy( $filter, $filterType)
-                ->where( function($mquery) use ($query) {
-                    $mquery->where('name', 'LIKE', "%{$query}%");
-                })
-                ->paginate(10));
-                return response([
-                    'status' => 'success',
-                    'message' => 'list the tasks',
-                    'tasks' => $tasks,
-                ]);
-        
+        if (isset($query)) {
+            $tasks = TaskResource::collection(Task::latest()
+            ->orderBy( $filter, $filterType)
+            ->where( function($mquery) use ($query) {
+                $mquery->where('name', 'LIKE', "%{$query}%");
+            })
+            ->paginate(10));
+    
+            }else{
+                $tasks = TaskResource::collection(Task::latest()
+                        ->orderBy( $filter, $filterType)
+                        ->paginate(10));
+                    
+            }
+            return response([
+                'status' => 'success',
+                'message' => 'list the tasks',
+                'tasks' => $tasks,
+            ]);
     }
     public function showTak($id)
     {        
